@@ -5,31 +5,31 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 public class G_Road_division {
 
     static boolean check(double mid, int n, double L, double[] arr) {
-        int count = 1;
-        int i = 0;
-        for (int pos = 1; pos < n; pos++) {
-            if (arr[pos] - arr[i] >= mid) {
-                count++;
-                i = pos;
-            }
+        double[] f = new double[n + 1];
+        f[0] = 0;
+        for (int i = 1; i <= n; i++) {
+            f[i] = Math.min(f[i - 1] + mid, arr[i + 1]);
+            if (f[i] < arr[i])
+                return false;
         }
-        return count < n;
+        return f[n] == L;
     }
 
     static double bs(int n, double L, double[] arr) {
         double l = 0;
-        double r = arr[arr.length - 1] + 1;
+        double r = L;
 
-        while (r - l > 0.0000001) {
+        while (r - l > 1e-6) {
             double mid = (r + l) / 2;
             if (check(mid, n, L, arr)) {
-                l = mid;
-            } else {
                 r = mid;
+            } else {
+                l = mid;
             }
         }
 
@@ -42,10 +42,13 @@ public class G_Road_division {
         int n = Integer.parseInt(nlLine[0]);
         int L = Integer.parseInt(nlLine[1]);
         String nLine[] = br.readLine().split(" ");
-        double[] arr = new double[n];
-        for (int i = 0; i < arr.length; i++) {
-            arr[i] = Double.parseDouble(nLine[i]);
+        double[] arr = new double[n + 2];
+        arr[n + 1] = L;
+        for (int i = 1; i <= n; i++) {
+            arr[i] = Double.parseDouble(nLine[i - 1]);
         }
+        Arrays.sort(arr);
+
         System.out.println(bs(n, L, arr));
     }
 }
